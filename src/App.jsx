@@ -72,7 +72,7 @@ const GAMES = [
 ];
 
 // ======================================
-// HEADER (VERSÃO FINAL COM FLAGS SOMENTE NO DESKTOP)
+// HEADER (VERSÃO FINAL COM CORREÇÃO DE IDIOMA)
 // ======================================
 const Header = ({ isHeaderDark, t, setLang }) => {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -122,10 +122,20 @@ const Header = ({ isHeaderDark, t, setLang }) => {
 
 
     const handleLangChange = (newLang) => {
+        // Obtenha o idioma atual (do localStorage ou use 'pt' como padrão)
+        const currentLang = localStorage.getItem("lang") || "pt"; 
+        
+        // **CORREÇÃO:** Se o novo idioma for igual ao atual, SAIA da função.
+        if (newLang === currentLang) {
+            setMenuOpen(false);
+            return; 
+        }
+
+        // Se o idioma for diferente, salve, atualize o estado e re-renderize sem recarregar a página.
         localStorage.setItem("lang", newLang);
-        setLang(newLang);
+        setLang(newLang); // Isso força a re-renderização do componente principal
         setMenuOpen(false);
-        window.location.reload();
+        // REMOVIDO: window.location.reload();
     };
 
 
@@ -321,7 +331,13 @@ const GameCard = ({ game, t, isMobileCentered }) => {
             onClick={handleCardClick}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-        > 
+        >
+
+            {shouldPlayVideo && game.videoUrl && (
+                <button className='general-btn card-btn' onClick={handleCardClick}>
+                    {t("learnMore")}
+                </button>
+            )}
 
             <div className="game-img">
                 {renderContent()}

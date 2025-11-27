@@ -8,7 +8,7 @@
   --h4: 24px;
   --h3: 28px;
   --h2: 40px;
-  --h1: 68px;
+  --h1: 60px;
 
 
   /* BORDER*/
@@ -72,6 +72,8 @@
   --yellow-150: #F6C25F;
   --yellow-200: #E0960D;
   --yellow-250: #c07d00; 
+
+   --orange-200:  #d8871e;; 
 
 
 

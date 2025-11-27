@@ -1,11 +1,11 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App.jsx";
-import { Toaster } from "react-hot-toast";
+// SEU index.js (OU main.jsx) DEVE PARECER COM ISSO:
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App'; // <--- IMPORTA O COMPONENTE APP
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
   <React.StrictMode>
-      <App />
-      <Toaster position="top-center" reverseOrder={false} />
+    <App /> 
   </React.StrictMode>
 );

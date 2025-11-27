@@ -401,8 +401,7 @@ button:active {
   transition: filter 0.3s ease;
 }
 
-.game-img {
-  /* Esta é a regra de altura correta para o card */
+.game-img { 
   position: relative;
   width: 100%;
   height: 200px;
@@ -410,8 +409,7 @@ button:active {
 }
 
 .game-img img,
-.game-img .game-trailer {
-  /* O conteúdo (imagem/vídeo) sempre preenche o contêiner 200px */
+.game-img .game-trailer { 
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -428,11 +426,7 @@ button:active {
 .game-img .game-trailer {
   pointer-events: none;
 }
-
-
-/* REMOÇÃO DO PONTO E UNIFICAÇÃO DE REGRAS DUPLICADAS */
-/* O bloco abaixo foi mantido e ajustado para não ser duplicado, 
-   o .game-img original foi movido acima */
+ 
 
 .game-overlay {
   position: absolute;

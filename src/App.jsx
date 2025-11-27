@@ -321,13 +321,7 @@ const GameCard = ({ game, t, isMobileCentered }) => {
             onClick={handleCardClick}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-        >
-
-            {shouldPlayVideo && game.videoUrl && (
-                <button className='general-btn card-btn' onClick={handleCardClick}>
-                    {t("learnMore")}
-                </button>
-            )}
+        > 
 
             <div className="game-img">
                 {renderContent()}

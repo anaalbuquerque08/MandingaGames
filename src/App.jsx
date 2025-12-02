@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import './App.css';
 import "./variables.css";
-import { FaSteam,FaTwitter, FaInstagram, FaTiktok, FaYoutube, FaDiscord } from 'react-icons/fa';
+import { FaSteam, FaTwitter, FaInstagram, FaTiktok, FaYoutube, FaDiscord } from 'react-icons/fa';
 import LogoSimbol from './assets/components/simbol.png';
 import Logo from './assets/components/whitelogogame.png';
 import { translations } from "./i18n/translations";
@@ -123,12 +123,12 @@ const Header = ({ isHeaderDark, t, setLang }) => {
 
     const handleLangChange = (newLang) => {
         // Obtenha o idioma atual (do localStorage ou use 'pt' como padrão)
-        const currentLang = localStorage.getItem("lang") || "pt"; 
-        
+        const currentLang = localStorage.getItem("lang") || "pt";
+
         // **CORREÇÃO:** Se o novo idioma for igual ao atual, SAIA da função.
         if (newLang === currentLang) {
             setMenuOpen(false);
-            return; 
+            return;
         }
 
         // Se o idioma for diferente, salve, atualize o estado e re-renderize sem recarregar a página.
@@ -210,38 +210,38 @@ const Header = ({ isHeaderDark, t, setLang }) => {
                 </div>
 
                 <aside className={`side-menu ${menuOpen ? "open" : ""}`} aria-hidden={!menuOpen}>
-                   <div className='mobile-container'> 
-                    <div className="mobile-menu">
-                        <button
-                            onClick={() => {
-                                if (location.pathname !== "/") {
-                                    handleNavigate('/', false);
-                                } else {
-                                    window.scrollTo({ top: 0, behavior: "smooth" });
-                                }
-                            }}
-                        >
-                            {t("home")}
-                        </button>
-                        <button onClick={() => handleNavigate('/#about-us-section')}>{t("aboutUs")}</button>
-                        <button onClick={() => handleNavigate('/#games-section')}>{t("games")}</button>
-                        <button onClick={() => handleNavigate('/#contact-section')}>{t("contact")}</button>
-                    </div>
-                    <div className="langs mobile-langs">
-                        <img
-                            src="/assets/flags/br.png"
-                            onClick={() => handleLangChange("pt")}
-                            className="lang-icon"
-                            alt="Português"
-                        />
+                    <div className='mobile-container'>
+                        <div className="mobile-menu">
+                            <button
+                                onClick={() => {
+                                    if (location.pathname !== "/") {
+                                        handleNavigate('/', false);
+                                    } else {
+                                        window.scrollTo({ top: 0, behavior: "smooth" });
+                                    }
+                                }}
+                            >
+                                {t("home")}
+                            </button>
+                            <button onClick={() => handleNavigate('/#about-us-section')}>{t("aboutUs")}</button>
+                            <button onClick={() => handleNavigate('/#games-section')}>{t("games")}</button>
+                            <button onClick={() => handleNavigate('/#contact-section')}>{t("contact")}</button>
+                        </div>
+                        <div className="langs mobile-langs">
+                            <img
+                                src="/assets/flags/br.png"
+                                onClick={() => handleLangChange("pt")}
+                                className="lang-icon"
+                                alt="Português"
+                            />
 
-                        <img
-                            src="/assets/flags/en.png"
-                            onClick={() => handleLangChange("en")}
-                            className="lang-icon"
-                            alt="English"
-                        />
-                    </div>
+                            <img
+                                src="/assets/flags/en.png"
+                                onClick={() => handleLangChange("en")}
+                                className="lang-icon"
+                                alt="English"
+                            />
+                        </div>
                     </div>
 
                     <div className="side-socials">
@@ -254,12 +254,11 @@ const Header = ({ isHeaderDark, t, setLang }) => {
         </>
     );
 };
-
 // ======================================
-// GameCard  
-// ======================================
-const GameCard = ({ game, t, isMobileCentered }) => {
-    const [isHovering, setIsHovering] = useState(false);
+// GameCard 
+// ====================================== 
+const GameCard = ({ game, t, activeGameId, onMobileCardClick }) => { 
+    const [isHovering, setIsHovering] = useState(false); 
     const navigate = useNavigate();
     const videoRef = useRef(null);
 
@@ -270,16 +269,19 @@ const GameCard = ({ game, t, isMobileCentered }) => {
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
-
-    const shouldPlayVideo = isMobile ? isMobileCentered : isHovering;
+     
+    const isThisCardActive = isMobile && activeGameId === game.id; 
+ 
+    const shouldPlayVideo = !isMobile ? isHovering : isThisCardActive; 
 
     useEffect(() => {
         if (videoRef.current) {
             if (shouldPlayVideo) {
+                // Tenta dar play
                 videoRef.current.play().catch(e => {
                     console.warn("Reprodução do vídeo bloqueada pelo navegador:", e.message);
                 });
-            } else {
+            } else { 
                 videoRef.current.pause();
                 videoRef.current.currentTime = 0;
             }
@@ -288,7 +290,15 @@ const GameCard = ({ game, t, isMobileCentered }) => {
 
 
     const handleCardClick = () => {
-        navigate(`/game/${game.id}`);
+        if (isMobile) {
+            if (isThisCardActive) { 
+                navigate(`/game/${game.id}`);
+            } else { 
+                onMobileCardClick(game.id); 
+            }
+        } else { 
+            navigate(`/game/${game.id}`);
+        }
     };
 
     const handleMouseEnter = () => {
@@ -318,7 +328,7 @@ const GameCard = ({ game, t, isMobileCentered }) => {
 
         return (
             <img
-                src={game.imageUrl}
+                src={isMobile ? game.imageUrl   : game.imageMobile} 
                 alt={t(game.titleKey)}
                 onError={(e) => { e.target.src = "https://placehold.co/300x200/333/FFF?text=GAME" }}
             />
@@ -327,28 +337,26 @@ const GameCard = ({ game, t, isMobileCentered }) => {
 
     return (
         <div
-            className="game-card"
+            className={`game-card ${isThisCardActive ? 'mobile-video-active' : ''}`}
             onClick={handleCardClick}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
 
-            {shouldPlayVideo && game.videoUrl && (
+            {shouldPlayVideo && game.videoUrl && ( 
                 <button className='general-btn card-btn' onClick={handleCardClick}>
                     {t("learnMore")}
                 </button>
             )}
-
+            
             <div className="game-img">
                 {renderContent()}
             </div>
         </div>
     );
-
 };
-
 // ======================================
-// SEÇÕES (Inalterado)
+// SEÇÕES  
 // ======================================
 const HeroSection = ({ parallaxOffset }) => (
     <section
@@ -408,55 +416,14 @@ const AboutUsSection = ({ t }) => (
 );
 
 // ======================================
-// GamesGridObserver (NOVO - Lógica de Intersecção)
+// GamesSection (Simplificado)
 // ======================================
-const GamesGridObserver = ({ t }) => {
-    const [centeredGameId, setCenteredGameId] = useState(null);
-    const gameCardRefs = useRef({});
-
-    useEffect(() => {
-        const options = {
-            root: null,
-            rootMargin: '-30% 0px -30% 0px',
-            threshold: 0.1,
-        };
-
-        const callback = (entries) => {
-            let foundCenterId = null;
-
-            const mostCenteredEntry = entries
-                .filter(entry => entry.isIntersecting)
-                .reduce((prev, current) => {
-                    const viewportCenter = window.innerHeight / 2;
-                    const rect = current.target.getBoundingClientRect();
-                    const elementCenter = rect.top + rect.height / 2;
-
-                    const prevDistance = Math.abs(viewportCenter - (prev?.target.getBoundingClientRect().top + prev?.target.getBoundingClientRect().height / 2));
-                    const currentDistance = Math.abs(viewportCenter - elementCenter);
-
-                    return currentDistance < prevDistance ? current : prev;
-                }, entries[0]);
-
-            if (mostCenteredEntry && mostCenteredEntry.isIntersecting) {
-                foundCenterId = parseInt(mostCenteredEntry.target.dataset.gameId);
-            }
-
-            setCenteredGameId(prevId => {
-                if (prevId !== foundCenterId) {
-                    return foundCenterId;
-                }
-                return prevId;
-            });
-        };
-
-        const observer = new IntersectionObserver(callback, options);
-
-        Object.values(gameCardRefs.current).forEach(ref => {
-            if (ref) observer.observe(ref);
-        });
-
-        return () => observer.disconnect();
-    }, []);
+// ======================================
+// GamesSection (NOVA VERSÃO com Estado Centralizado)
+// ======================================
+const GamesSection = ({ t }) => {
+    // Novo estado centralizado: armazena o ID do jogo cujo card foi clicado primeiro no mobile
+    const [mobileClickedGameId, setMobileClickedGameId] = useState(null); 
 
     useEffect(() => {
         const cards = document.querySelectorAll(".game-card");
@@ -466,32 +433,34 @@ const GamesGridObserver = ({ t }) => {
     }, []);
 
 
+    // Função que o GameCard vai chamar para avisar que ele foi clicado
+    const handleGameCardClick = (gameId) => {
+        setMobileClickedGameId(gameId);
+    };
+
     return (
         <section className="games-section" id="games-section">
             <h2>{t("gamesTitle")}</h2>
             <div className="games-grid">
-                {GAMES.map(game => {
-                    const isCentered = centeredGameId === game.id;
-                    return (
-                        <div
-                            key={game.id}
-                            ref={el => gameCardRefs.current[game.id] = el}
-                            data-game-id={game.id}
-                        >
-                            <GameCard
-                                game={game}
-                                t={t}
-                                isMobileCentered={isCentered}
-                            />
-                        </div>
-                    );
-                })}
+                {GAMES.map(game => (
+                    <div key={game.id}>
+                        <GameCard
+                            game={game}
+                            t={t}
+                            // Passamos o ID ativo e a função de setter
+                            activeGameId={mobileClickedGameId}
+                            onMobileCardClick={handleGameCardClick}
+                        />
+                    </div>
+                ))}
             </div>
         </section>
     );
 };
 
-
+// ======================================
+// HOME PAGE COMPONENT
+// ======================================
 // ======================================
 // HOME PAGE COMPONENT
 // ======================================
@@ -499,7 +468,7 @@ const HomePage = ({ parallaxOffset, t }) => (
     <>
         <HeroSection parallaxOffset={parallaxOffset} />
         <AboutUsSection t={t} />
-        <GamesGridObserver t={t} />
+        <GamesSection t={t} /> {/* Atualizado de GamesGridObserver para GamesSection */}
     </>
 );
 
@@ -602,17 +571,17 @@ const GameDetailPage = ({ t }) => {
         </main>
     );
 };
- 
+
 const Footer = ({ t }) => (
     <footer className="footer" id="contact-section">
-        <div className="footer-content"> 
+        <div className="footer-content">
             <div className="footer-section footer-branding">
                 <Link to="/" className="logo-footer">
                     <img src={Logo} alt="Mandinga Games Logo" className="logo-img" />
                 </Link>
                 <p className="copyright">© {new Date().getFullYear()} MANDINGA GAMES. {t("allRightsReserved")}</p>
             </div>
- 
+
             <div className="footer-section footer-nav">
                 <h3>{t("siteMap")}</h3>
                 <ul>
@@ -621,12 +590,12 @@ const Footer = ({ t }) => (
                     <li><a href="/#games-section">{t("games")}</a></li>
                 </ul>
             </div>
- 
+
             <div className="footer-section footer-contact">
                 <h3>{t("Contact")}</h3>
                 <ul>
                     <li><a href="mailto:contact@mandinga.games">contact@mandinga.games</a></li>
-                    
+
                 </ul>
             </div>
 
@@ -635,12 +604,12 @@ const Footer = ({ t }) => (
                 <div className="social-icons">
                     <a href="https://x.com/mandingagames" target="_blank" rel="noopener noreferrer"><FaTwitter /></a>
                     <a href="https://www.instagram.com/mandinga.games/" target="_blank" rel="noopener noreferrer"><FaInstagram /></a>
-                    <a href="https://www.tiktok.com/@mandingagames" target="_blank" rel="noopener noreferrer"><FaTiktok /></a> 
-                    
+                    <a href="https://www.tiktok.com/@mandingagames" target="_blank" rel="noopener noreferrer"><FaTiktok /></a>
+
                     <a href="https://www.youtube.com/@mandingagames" target="_blank" rel="noopener noreferrer"><FaYoutube /></a>
-                     <a href="https://store.steampowered.com/developer/mandingagames" target="_blank" rel="noopener noreferrer"><FaSteam  /></a>
-                    
-                     
+                    <a href="https://store.steampowered.com/developer/mandingagames" target="_blank" rel="noopener noreferrer"><FaSteam /></a>
+
+
                 </div>
             </div>
         </div>

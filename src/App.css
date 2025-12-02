@@ -282,6 +282,7 @@ button:active {
   align-items: center;
   justify-content: center;
   gap: 10rem;
+  margin-top: 20px;
 }
 
 .about-image-control {
@@ -829,6 +830,12 @@ button:active {
 
 }
 
+
+@media (max-height: 660px) {
+.hero-content {
+  display: none;
+  }
+}
 /* ========================================================
     MOBILE  
     ======================================================== */
@@ -1006,7 +1013,7 @@ button:active {
 
   .hero-content {
     margin-top: 170px;
-    width: 80%;
+    width: 100%;
   }
 
 

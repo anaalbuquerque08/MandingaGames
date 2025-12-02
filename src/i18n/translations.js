@@ -13,7 +13,7 @@ export const translations = {
     heroText: "",
     aboutTitle: "Sobre Nós",
     aboutText1: "Mandinga Games é um estúdio Indie de desenvolvimento de games, sediado na Bahia, Brasil.",
-    aboutText2: "Junte-se à nossa comunidade e escolha sua rota para acompanhar de perto o desenvolvimento do nosso próxio projeto 'Black Sailors'.",
+    aboutText2: "Junte-se à nossa comunidade e escolha sua rota para acompanhar de perto o desenvolvimento do nosso próximo projeto 'Black Sailors'.",
     followUs: "Jogar Demo",
 
     gamesTitle: "Portifólio do Time",

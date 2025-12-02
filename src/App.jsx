@@ -276,8 +276,7 @@ const GameCard = ({ game, t, activeGameId, onMobileCardClick }) => {
 
     useEffect(() => {
         if (videoRef.current) {
-            if (shouldPlayVideo) {
-                // Tenta dar play
+            if (shouldPlayVideo) { 
                 videoRef.current.play().catch(e => {
                     console.warn("Reprodução do vídeo bloqueada pelo navegador:", e.message);
                 });
@@ -328,7 +327,7 @@ const GameCard = ({ game, t, activeGameId, onMobileCardClick }) => {
 
         return (
             <img
-                src={isMobile ? game.imageUrl   : game.imageMobile} 
+                src={game.imageUrl} 
                 alt={t(game.titleKey)}
                 onError={(e) => { e.target.src = "https://placehold.co/300x200/333/FFF?text=GAME" }}
             />

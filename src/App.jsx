@@ -13,7 +13,7 @@ const GAMES = [
         descriptionKey: "game_1_description",
         imageUrl: "/assets/games/blacksailors.png",
         imageMobile: "/assets/games/blacksailors_nologo.png",
-        videoUrl: "/assets/videos/blacksailors_trailer.mp4",
+        videoUrl: "/assets/videos/blacksailors_trailer_opt.mp4",
         availability: "demo",
         storeLink: "https://mandinga.itch.io/black-sailors"
     },
@@ -23,7 +23,7 @@ const GAMES = [
         descriptionKey: "game_2_description",
         imageUrl: "/assets/games/sudokats.png",
         imageMobile: "/assets/games/sudokats_nologo.png",
-        videoUrl: "/assets/videos/sudokats_trailer.mp4",
+        videoUrl: "/assets/videos/sudokats_trailer_opt.mp4",
         availability: "now",
         storeLink: "https://store.steampowered.com/app/1706190/SudoKats/"
     },
@@ -33,7 +33,7 @@ const GAMES = [
         descriptionKey: "game_3_description",
         imageUrl: "/assets/games/sudokube.png",
         imageMobile: "/assets/games/sudokube_nologo.png",
-        videoUrl: "/assets/videos/sudokube_trailer.mp4",
+        videoUrl: "/assets/videos/sudokube_trailer_opt.mp4",
         availability: "now",
         storeLink: "https://store.steampowered.com/app/1770230/SudoKube/?curator_clanid=41518892"
     },
@@ -45,7 +45,7 @@ const GAMES = [
         extraDescriptionKey: "game_4_extra_info",
         imageUrl: "/assets/games/tinkerracers.png",
         imageMobile: "/assets/games/tinkerracers_nologo.png",
-        videoUrl: "/assets/videos/tinkerracers_trailer.mp4",
+        videoUrl: "/assets/videos/tinkerracers_trailer_opt.mp4",
         availability: "now",
         storeLink: "https://store.steampowered.com/app/1234620/Tinker_Racers/"
     },
@@ -55,7 +55,7 @@ const GAMES = [
         descriptionKey: "game_5_description",
         imageUrl: "/assets/games/EmancipatorGo.png",
         imageMobile: "/assets/games/EmancipatorGo_nologo.png",
-        videoUrl: "/assets/videos/emancipatorgo_trailer.mp4",
+        videoUrl: "/assets/videos/emancipatorgo_trailer_opt.mp4",
         availability: "demo",
         storeLink: "https://store.steampowered.com/app/2114640/Emancipator_GO/?curator_clanid=41518892"
     },
@@ -65,7 +65,7 @@ const GAMES = [
         descriptionKey: "game_6_description",
         imageUrl: "/assets/games/hardworksimulator.png",
         imageMobile: "/assets/games/hardworksimulator_nologo.png",
-        videoUrl: "/assets/videos/hardwork_trailer.mp4",
+        videoUrl: "/assets/videos/hardwork_trailer_opt.mp4",
         availability: "now",
         storeLink: "https://store.steampowered.com/app/1781880/Hardwork_Simulator/?curator_clanid=41518892"
     },
@@ -415,13 +415,9 @@ const AboutUsSection = ({ t }) => (
 );
 
 // ======================================
-// GamesSection (Simplificado)
-// ======================================
-// ======================================
-// GamesSection (NOVA VERSÃO com Estado Centralizado)
-// ======================================
-const GamesSection = ({ t }) => {
-    // Novo estado centralizado: armazena o ID do jogo cujo card foi clicado primeiro no mobile
+// GamesSection 
+// ====================================== 
+const GamesSection = ({ t }) => { 
     const [mobileClickedGameId, setMobileClickedGameId] = useState(null); 
 
     useEffect(() => {
@@ -431,8 +427,7 @@ const GamesSection = ({ t }) => {
         });
     }, []);
 
-
-    // Função que o GameCard vai chamar para avisar que ele foi clicado
+ 
     const handleGameCardClick = (gameId) => {
         setMobileClickedGameId(gameId);
     };
@@ -445,8 +440,7 @@ const GamesSection = ({ t }) => {
                     <div key={game.id}>
                         <GameCard
                             game={game}
-                            t={t}
-                            // Passamos o ID ativo e a função de setter
+                            t={t} 
                             activeGameId={mobileClickedGameId}
                             onMobileCardClick={handleGameCardClick}
                         />
@@ -456,10 +450,7 @@ const GamesSection = ({ t }) => {
         </section>
     );
 };
-
-// ======================================
-// HOME PAGE COMPONENT
-// ======================================
+ 
 // ======================================
 // HOME PAGE COMPONENT
 // ======================================
@@ -467,7 +458,7 @@ const HomePage = ({ parallaxOffset, t }) => (
     <>
         <HeroSection parallaxOffset={parallaxOffset} />
         <AboutUsSection t={t} />
-        <GamesSection t={t} /> {/* Atualizado de GamesGridObserver para GamesSection */}
+        <GamesSection t={t} />  
     </>
 );
 

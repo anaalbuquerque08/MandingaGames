@@ -593,7 +593,7 @@ const Footer = ({ t }) => (
             <div className="footer-section footer-contact">
                 <h3>{t("Contact")}</h3>
                 <ul>
-                    <li><a href="mailto:contact@mandinga.games">contact@mandinga.games</a></li>
+                    <li><a href="mailto:mandingagamestudio@gmail.com">contact@mandinga.games</a></li>
 
                 </ul>
             </div>

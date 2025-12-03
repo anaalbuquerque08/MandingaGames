@@ -4,7 +4,7 @@ import "./variables.css";
 import { FaSteam, FaTwitter, FaInstagram, FaTiktok, FaYoutube } from 'react-icons/fa';
 import LogoSimbol from './assets/components/simbol.png';
 import Logo from './assets/components/whitelogogame.png';
-import { translations } from "./i18n/translations"; 
+import { translations } from "./i18n/translations";
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useParams, useLocation } from 'react-router-dom';
 
 // ======================================
@@ -89,19 +89,21 @@ const Header = React.memo(({ isHeaderDark, t, setLang }) => {
     const navigate = useNavigate();
     const location = useLocation();
 
+    // Lógica de navegação aprimorada para lidar com âncoras
     const handleNavigate = useCallback((path, isAnchor = true) => {
         setMenuOpen(false);
         const isHomePage = location.pathname === '/';
-        const targetId = path.replace('/#', '');
+        const targetId = path.replace('/', '');
 
-        if (isAnchor && targetId) {
+        if (isAnchor && targetId.startsWith('#')) {
+            const id = targetId.replace('#', '');
+
             if (!isHomePage) {
-                navigate(`/${path}`);
-                setTimeout(() => {
-                    document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
-                }, 50);
+                // Se não estiver na home, navega para a home com o hash
+                navigate(`/${targetId}`);
             } else {
-                document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
+                // Se já estiver na home, apenas faz o scroll
+                document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
             }
         } else if (!isAnchor && path === '/') {
             if (!isHomePage) {
@@ -115,10 +117,15 @@ const Header = React.memo(({ isHeaderDark, t, setLang }) => {
     }, [navigate, location.pathname]);
 
 
+    // Efeito para rolar para a âncora após a navegação para a home page
     useEffect(() => {
+        // Verifica se estamos na Home Page E se há um hash (âncora) na URL
         if (location.pathname === '/' && location.hash) {
             const id = location.hash.replace('#', '');
-            document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+            // Pequeno timeout para garantir que os elementos da Home Page sejam renderizados
+            setTimeout(() => {
+                document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
         }
     }, [location.hash, location.pathname]);
 
@@ -462,15 +469,15 @@ const GameDetailPage = ({ t }) => {
             window.open(buttonProps.link, '_blank');
         }
     };
-    
-    const handleBackClick = () => navigate(-1); 
+
+    const handleBackClick = () => navigate(-1);
 
     return (
         <main className="game-detail page-transition">
             <button className="back-btn" onClick={handleBackClick}>
                 &larr; {t("back")}
             </button>
-            
+
             <div className="detail-img">
                 <img
                     src={game.imageMobile}
@@ -535,6 +542,7 @@ const Footer = React.memo(({ t }) => (
             <div className="footer-section footer-nav">
                 <h3>{t("siteMap")}</h3>
                 <ul>
+                    {/* Alterado de <Link to="/"> para <a> com href para garantir a navegação correta para a âncora após o reset da rota */}
                     <li><Link to="/">{t("home")}</Link></li>
                     <li><a href="/#about-us-section">{t("aboutUs")}</a></li>
                     <li><a href="/#games-section">{t("games")}</a></li>
@@ -593,22 +601,22 @@ const AppContent = () => {
 
     useEffect(() => {
         const revealElements = document.querySelectorAll('.reveal');
-        
+
         if (revealElements.length === 0) return;
 
         const observer = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
-                    observer.unobserve(entry.target); 
+                    observer.unobserve(entry.target);
                 }
             });
         }, {
-            threshold: 0.1 
+            threshold: 0.1
         });
 
         revealElements.forEach(el => observer.observe(el));
-        
+
         return () => observer.disconnect();
 
     }, [location.pathname]);

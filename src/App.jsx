@@ -1,11 +1,15 @@
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import './App.css';
 import "./variables.css";
-import { FaSteam, FaTwitter, FaInstagram, FaTiktok, FaYoutube, FaDiscord } from 'react-icons/fa';
+import { FaSteam, FaTwitter, FaInstagram, FaTiktok, FaYoutube } from 'react-icons/fa';
 import LogoSimbol from './assets/components/simbol.png';
 import Logo from './assets/components/whitelogogame.png';
-import { translations } from "./i18n/translations";
+import { translations } from "./i18n/translations"; 
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useParams, useLocation } from 'react-router-dom';
+
+// ======================================
+// DADOS
+// ======================================
 const GAMES = [
     {
         id: 1,
@@ -71,35 +75,39 @@ const GAMES = [
     },
 ];
 
+const AVAILABILITY_MAP = {
+    now: { textKey: "availableNow", class: "status-now" },
+    demo: { textKey: "availableDemo", class: "status-demo" },
+    soon: { textKey: "comingSoon", class: "status-soon" },
+};
+
 // ======================================
-// HEADER (VERSÃO FINAL COM CORREÇÃO DE IDIOMA)
+// HEADER 
 // ======================================
-const Header = ({ isHeaderDark, t, setLang }) => {
+const Header = React.memo(({ isHeaderDark, t, setLang }) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
 
     const handleNavigate = useCallback((path, isAnchor = true) => {
         setMenuOpen(false);
+        const isHomePage = location.pathname === '/';
+        const targetId = path.replace('/#', '');
 
-        if (isAnchor) {
-            const targetId = path.replace('/#', '');
-
-            if (location.pathname !== '/') {
-                navigate(path);
-
+        if (isAnchor && targetId) {
+            if (!isHomePage) {
+                navigate(`/${path}`);
                 setTimeout(() => {
-                    const element = document.getElementById(targetId);
-                    if (element) {
-                        element.scrollIntoView({ behavior: 'smooth' });
-                    }
+                    document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
                 }, 50);
-
             } else {
-                const element = document.getElementById(targetId);
-                if (element) {
-                    element.scrollIntoView({ behavior: 'smooth' });
-                }
+                document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
+            }
+        } else if (!isAnchor && path === '/') {
+            if (!isHomePage) {
+                navigate('/');
+            } else {
+                window.scrollTo({ top: 0, behavior: "smooth" });
             }
         } else {
             navigate(path);
@@ -108,35 +116,25 @@ const Header = ({ isHeaderDark, t, setLang }) => {
 
 
     useEffect(() => {
-        const handleHashScroll = () => {
-            if (location.pathname === '/' && location.hash) {
-                const id = location.hash.replace('#', '');
-                const element = document.getElementById(id);
-                if (element) {
-                    setTimeout(() => element.scrollIntoView({ behavior: 'smooth' }), 50);
-                }
-            }
-        };
-        handleHashScroll();
-    }, [location]);
+        if (location.pathname === '/' && location.hash) {
+            const id = location.hash.replace('#', '');
+            document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [location.hash, location.pathname]);
 
 
-    const handleLangChange = (newLang) => {
-        // Obtenha o idioma atual (do localStorage ou use 'pt' como padrão)
+    const handleLangChange = useCallback((newLang) => {
         const currentLang = localStorage.getItem("lang") || "pt";
 
-        // **CORREÇÃO:** Se o novo idioma for igual ao atual, SAIA da função.
         if (newLang === currentLang) {
             setMenuOpen(false);
             return;
         }
 
-        // Se o idioma for diferente, salve, atualize o estado e re-renderize sem recarregar a página.
         localStorage.setItem("lang", newLang);
-        setLang(newLang); // Isso força a re-renderização do componente principal
+        setLang(newLang);
         setMenuOpen(false);
-        // REMOVIDO: window.location.reload();
-    };
+    }, [setLang]);
 
 
     return (
@@ -150,30 +148,13 @@ const Header = ({ isHeaderDark, t, setLang }) => {
             <header className={`header ${isHeaderDark ? 'scrolled' : ''}`}>
 
                 <div className="header-left">
-                    <Link to="/" className="logo" aria-label="home" onClick={() => {
-                        if (location.pathname !== "/") {
-                            handleNavigate('/', false);
-                        } else {
-                            window.scrollTo({ top: 0, behavior: "smooth" });
-                        }
-                    }}>
+                    <Link to="/" className="logo" aria-label="home" onClick={() => handleNavigate('/', false)}>
                         <img src={LogoSimbol} alt="Mandinga Games Logo" className="logo-img" />
                     </Link>
                 </div>
 
                 <nav className="nav desktop-nav">
-                    <button
-                        onClick={() => {
-                            if (location.pathname !== "/") {
-                                handleNavigate('/', false);
-                            } else {
-                                window.scrollTo({ top: 0, behavior: "smooth" });
-                            }
-                        }}
-                    >
-                        {t("home")}
-                    </button>
-
+                    <button onClick={() => handleNavigate('/', false)}>{t("home")}</button>
                     <button onClick={() => handleNavigate('/#about-us-section')}>{t("aboutUs")}</button>
                     <button onClick={() => handleNavigate('/#games-section')}>{t("games")}</button>
                     <button onClick={() => handleNavigate('/#contact-section')}>{t("contact")}</button>
@@ -187,7 +168,6 @@ const Header = ({ isHeaderDark, t, setLang }) => {
                             className="lang-icon"
                             alt="Português"
                         />
-
                         <img
                             src="/assets/flags/en.png"
                             onClick={() => handleLangChange("en")}
@@ -212,17 +192,7 @@ const Header = ({ isHeaderDark, t, setLang }) => {
                 <aside className={`side-menu ${menuOpen ? "open" : ""}`} aria-hidden={!menuOpen}>
                     <div className='mobile-container'>
                         <div className="mobile-menu">
-                            <button
-                                onClick={() => {
-                                    if (location.pathname !== "/") {
-                                        handleNavigate('/', false);
-                                    } else {
-                                        window.scrollTo({ top: 0, behavior: "smooth" });
-                                    }
-                                }}
-                            >
-                                {t("home")}
-                            </button>
+                            <button onClick={() => handleNavigate('/', false)}>{t("home")}</button>
                             <button onClick={() => handleNavigate('/#about-us-section')}>{t("aboutUs")}</button>
                             <button onClick={() => handleNavigate('/#games-section')}>{t("games")}</button>
                             <button onClick={() => handleNavigate('/#contact-section')}>{t("contact")}</button>
@@ -234,7 +204,6 @@ const Header = ({ isHeaderDark, t, setLang }) => {
                                 className="lang-icon"
                                 alt="Português"
                             />
-
                             <img
                                 src="/assets/flags/en.png"
                                 onClick={() => handleLangChange("en")}
@@ -253,34 +222,27 @@ const Header = ({ isHeaderDark, t, setLang }) => {
             </header>
         </>
     );
-};
+});
 // ======================================
 // GameCard 
 // ====================================== 
-const GameCard = ({ game, t, activeGameId, onMobileCardClick }) => { 
-    const [isHovering, setIsHovering] = useState(false); 
+const GameCard = ({ game, t, activeGameId, onMobileCardClick }) => {
+    const [isHovering, setIsHovering] = useState(false);
     const navigate = useNavigate();
     const videoRef = useRef(null);
 
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    const isMobile = useMemo(() => window.innerWidth < 768, []);
 
-    useEffect(() => {
-        const handleResize = () => setIsMobile(window.innerWidth < 768);
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-     
-    const isThisCardActive = isMobile && activeGameId === game.id; 
- 
-    const shouldPlayVideo = !isMobile ? isHovering : isThisCardActive; 
+    const isThisCardActive = isMobile && activeGameId === game.id;
+    const shouldPlayVideo = game.videoUrl && (!isMobile ? isHovering : isThisCardActive);
 
     useEffect(() => {
         if (videoRef.current) {
-            if (shouldPlayVideo) { 
+            if (shouldPlayVideo) {
                 videoRef.current.play().catch(e => {
-                    console.warn("Reprodução do vídeo bloqueada pelo navegador:", e.message);
+                    console.warn("Reprodução de vídeo bloqueada:", e.message);
                 });
-            } else { 
+            } else {
                 videoRef.current.pause();
                 videoRef.current.currentTime = 0;
             }
@@ -290,12 +252,12 @@ const GameCard = ({ game, t, activeGameId, onMobileCardClick }) => {
 
     const handleCardClick = () => {
         if (isMobile) {
-            if (isThisCardActive) { 
+            if (isThisCardActive) {
                 navigate(`/game/${game.id}`);
-            } else { 
-                onMobileCardClick(game.id); 
+            } else {
+                onMobileCardClick(game.id);
             }
-        } else { 
+        } else {
             navigate(`/game/${game.id}`);
         }
     };
@@ -309,7 +271,7 @@ const GameCard = ({ game, t, activeGameId, onMobileCardClick }) => {
     }
 
     const renderContent = () => {
-        if (shouldPlayVideo && game.videoUrl) {
+        if (shouldPlayVideo) {
             return (
                 <video
                     ref={videoRef}
@@ -318,7 +280,7 @@ const GameCard = ({ game, t, activeGameId, onMobileCardClick }) => {
                     loop
                     muted
                     playsInline
-                    preload="none"
+                    preload="metadata"
                     className="game-trailer"
                     poster={game.imageUrl}
                 />
@@ -327,7 +289,7 @@ const GameCard = ({ game, t, activeGameId, onMobileCardClick }) => {
 
         return (
             <img
-                src={game.imageUrl} 
+                src={game.imageUrl}
                 alt={t(game.titleKey)}
                 onError={(e) => { e.target.src = "https://placehold.co/300x200/333/FFF?text=GAME" }}
             />
@@ -340,14 +302,15 @@ const GameCard = ({ game, t, activeGameId, onMobileCardClick }) => {
             onClick={handleCardClick}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
+            role="button"
+            tabIndex={0}
         >
-
-            {shouldPlayVideo && game.videoUrl && ( 
-                <button className='general-btn card-btn' onClick={handleCardClick}>
+            {shouldPlayVideo && (
+                <button className='general-btn card-btn'>
                     {t("learnMore")}
                 </button>
             )}
-            
+
             <div className="game-img">
                 {renderContent()}
             </div>
@@ -355,9 +318,9 @@ const GameCard = ({ game, t, activeGameId, onMobileCardClick }) => {
     );
 };
 // ======================================
-// SEÇÕES  
+// SEÇÕES 
 // ======================================
-const HeroSection = ({ parallaxOffset }) => (
+const HeroSection = React.memo(({ parallaxOffset }) => (
     <section
         className="hero-section"
         style={{
@@ -367,14 +330,14 @@ const HeroSection = ({ parallaxOffset }) => (
         <div className="hero-overlay"></div>
         <div className="hero-content"></div>
     </section>
-);
+));
 
 
-const AboutUsSection = ({ t }) => (
+const AboutUsSection = React.memo(({ t }) => (
     <section className="about-section" id="about-us-section">
         <div className='about-box'>
 
-            <div className="about-text">
+            <div className="about-text reveal">
                 <h2>{t("aboutTitle")}</h2>
                 <p>{t("aboutText1")}</p>
                 <p>{t("aboutText2")}</p>
@@ -408,17 +371,17 @@ const AboutUsSection = ({ t }) => (
             <img
                 src="/assets/control.png"
                 alt="Controle de jogo"
-                className="about-image-control"
+                className="about-image-control reveal"
             />
         </div>
     </section>
-);
+));
 
 // ======================================
 // GamesSection 
 // ====================================== 
-const GamesSection = ({ t }) => { 
-    const [mobileClickedGameId, setMobileClickedGameId] = useState(null); 
+const GamesSection = ({ t }) => {
+    const [mobileClickedGameId, setMobileClickedGameId] = useState(null);
 
     useEffect(() => {
         const cards = document.querySelectorAll(".game-card");
@@ -427,10 +390,9 @@ const GamesSection = ({ t }) => {
         });
     }, []);
 
- 
-    const handleGameCardClick = (gameId) => {
-        setMobileClickedGameId(gameId);
-    };
+    const handleGameCardClick = useCallback((gameId) => {
+        setMobileClickedGameId(prevId => prevId === gameId ? null : gameId);
+    }, []);
 
     return (
         <section className="games-section" id="games-section">
@@ -440,7 +402,7 @@ const GamesSection = ({ t }) => {
                     <div key={game.id}>
                         <GameCard
                             game={game}
-                            t={t} 
+                            t={t}
                             activeGameId={mobileClickedGameId}
                             onMobileCardClick={handleGameCardClick}
                         />
@@ -450,20 +412,20 @@ const GamesSection = ({ t }) => {
         </section>
     );
 };
- 
+
 // ======================================
 // HOME PAGE COMPONENT
 // ======================================
-const HomePage = ({ parallaxOffset, t }) => (
+const HomePage = React.memo(({ parallaxOffset, t }) => (
     <>
         <HeroSection parallaxOffset={parallaxOffset} />
         <AboutUsSection t={t} />
-        <GamesSection t={t} />  
+        <GamesSection t={t} />
     </>
-);
+));
 
 // ======================================
-// GAME DETAIL PAGE  
+// GAME DETAIL PAGE 
 // ======================================
 const GameDetailPage = ({ t }) => {
     const { gameId } = useParams();
@@ -483,35 +445,32 @@ const GameDetailPage = ({ t }) => {
         );
     }
 
-    let statusTextKey;
-    if (game.availability === "now") {
-        statusTextKey = "availableNow";
-    } else if (game.availability === "demo") {
-        statusTextKey = "availableDemo";
-    } else {
-        statusTextKey = "comingSoon";
-    }
+    const statusInfo = AVAILABILITY_MAP[game.availability] || AVAILABILITY_MAP.soon;
 
-    let buttonTextKey;
-    let buttonLink = game.storeLink;
-
-    if (game.availability === "demo") {
-        buttonTextKey = "playTheDemo";
-    } else if (game.availability === "now") {
-        buttonTextKey = "playOnSteam";
-    } else {
-        buttonTextKey = "comingSoon";
-        buttonLink = null;
-    }
+    const buttonProps = useMemo(() => {
+        if (game.availability === "demo") {
+            return { textKey: "playTheDemo", link: game.storeLink, disabled: false };
+        }
+        if (game.availability === "now") {
+            return { textKey: "playOnSteam", link: game.storeLink, disabled: false };
+        }
+        return { textKey: "comingSoon", link: null, disabled: true };
+    }, [game.availability, game.storeLink]);
 
     const handlePlayButtonClick = () => {
-        if (buttonLink) {
-            window.open(buttonLink, '_blank');
+        if (buttonProps.link) {
+            window.open(buttonProps.link, '_blank');
         }
     };
+    
+    const handleBackClick = () => navigate(-1); 
 
     return (
         <main className="game-detail page-transition">
+            <button className="back-btn" onClick={handleBackClick}>
+                &larr; {t("back")}
+            </button>
+            
             <div className="detail-img">
                 <img
                     src={game.imageMobile}
@@ -522,7 +481,6 @@ const GameDetailPage = ({ t }) => {
                 <div className="detail-img-overlay">
                     {game.extraDescriptionKey && (
                         <div className="detail-extra-info">
-
                             <p>Titulo de:</p>
                             {game.extraIconPath && (
                                 <img
@@ -531,7 +489,6 @@ const GameDetailPage = ({ t }) => {
                                     className="detail-extra-icon"
                                 />
                             )}
-
                         </div>
                     )}
                 </div>
@@ -542,19 +499,19 @@ const GameDetailPage = ({ t }) => {
 
                     <h1 className="game-title-container">
                         {t(game.titleKey)}
-                        <span className={`status-tag status-${game.availability}`}>
-                            {t(statusTextKey)}
+                        <span className={`status-tag ${statusInfo.class}`}>
+                            {t(statusInfo.textKey)}
                         </span>
                     </h1>
                     <p>{t(game.descriptionKey)}</p>
 
 
                     <button
-                        className={`general-btn  ${game.availability === 'soon' ? 'disabled' : ''}`}
+                        className={`general-btn ${buttonProps.disabled ? 'disabled' : ''}`}
                         onClick={handlePlayButtonClick}
-                        disabled={game.availability === 'soon'}
+                        disabled={buttonProps.disabled}
                     >
-                        {t(buttonTextKey)}
+                        {t(buttonProps.textKey)}
                     </button>
                 </div>
             </div>
@@ -562,7 +519,10 @@ const GameDetailPage = ({ t }) => {
     );
 };
 
-const Footer = ({ t }) => (
+// ======================================
+// FOOTER
+// ======================================
+const Footer = React.memo(({ t }) => (
     <footer className="footer" id="contact-section">
         <div className="footer-content">
             <div className="footer-section footer-branding">
@@ -585,7 +545,6 @@ const Footer = ({ t }) => (
                 <h3>{t("Contact")}</h3>
                 <ul>
                     <li><a href="mailto:mandingagamestudio@gmail.com">contact@mandinga.games</a></li>
-
                 </ul>
             </div>
 
@@ -595,18 +554,15 @@ const Footer = ({ t }) => (
                     <a href="https://x.com/mandingagames" target="_blank" rel="noopener noreferrer"><FaTwitter /></a>
                     <a href="https://www.instagram.com/mandinga.games/" target="_blank" rel="noopener noreferrer"><FaInstagram /></a>
                     <a href="https://www.tiktok.com/@mandingagames" target="_blank" rel="noopener noreferrer"><FaTiktok /></a>
-
                     <a href="https://www.youtube.com/@mandingagames" target="_blank" rel="noopener noreferrer"><FaYoutube /></a>
                     <a href="https://store.steampowered.com/developer/mandingagames" target="_blank" rel="noopener noreferrer"><FaSteam /></a>
-
-
                 </div>
             </div>
         </div>
     </footer>
-);
+));
 // ======================================
-// COMPONENTE PRINCIPAL  
+// COMPONENTE PRINCIPAL 
 // ======================================
 const AppContent = () => {
     const [scrollY, setScrollY] = useState(0);
@@ -617,13 +573,12 @@ const AppContent = () => {
         return localStorage.getItem("lang") || "pt";
     });
 
-    const t = (key) => translations[lang][key] || key;
+    const t = useCallback((key) => translations[lang][key] || key, [lang]);
 
 
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [location.pathname]);
-
 
     useEffect(() => {
         const handleScroll = () => {
@@ -636,6 +591,28 @@ const AppContent = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    useEffect(() => {
+        const revealElements = document.querySelectorAll('.reveal');
+        
+        if (revealElements.length === 0) return;
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target); 
+                }
+            });
+        }, {
+            threshold: 0.1 
+        });
+
+        revealElements.forEach(el => observer.observe(el));
+        
+        return () => observer.disconnect();
+
+    }, [location.pathname]);
+
     const isHeaderDark = useMemo(() => {
         const SCROLL_THRESHOLD = 700;
         if (location.pathname.startsWith('/game/')) return true;
@@ -644,7 +621,7 @@ const AppContent = () => {
 
 
     return (
-        <div className="app no-scroll">
+        <div className="app">
             <Header
                 isHeaderDark={isHeaderDark}
                 t={t}
@@ -670,7 +647,6 @@ const AppContent = () => {
         </div>
     );
 };
-
 
 const App = () => (
     <Router>

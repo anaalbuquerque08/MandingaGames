@@ -235,7 +235,7 @@ button:active {
 
 
 .hero-overlay {
-  height: 100vh;
+  height: 100vh; 
   position: absolute;
   inset: 0;
   background-image: linear-gradient(to top, #0C0C0F 10%, transparent);
@@ -268,12 +268,13 @@ button:active {
 /* ===========================
     ABOUT SECTION
     =========================== */
-.about-section {
+.about-section { 
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4rem 2rem;
+  padding: 2rem 2rem;
   background: var(--background-color);
+  margin-top: 200px;
 
 }
 

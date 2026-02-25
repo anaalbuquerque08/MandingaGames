@@ -19,6 +19,7 @@ export const translations = {
     followUs: "Jogar Demo",
 
     gamesTitle: "Portifólio do Time",
+    backToGames: "← Voltar para Games",
     notFound: "Página Não Encontrada",
     gameNotFound: "Jogo Não Encontrado!",
     learnMore: "Saiba Mais",
@@ -75,6 +76,7 @@ export const translations = {
     followUs: "Follow us",
 
     gamesTitle: "Team Portfolio",
+    backToGames: "← Back to Games",
     notFound: "Page Not Found",
     gameNotFound: "Game Not Found!",
     learnMore: "Learn More",

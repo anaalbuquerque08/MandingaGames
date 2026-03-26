@@ -549,7 +549,10 @@ button:active {
   background-color: #a1a1aa;
   color: #000000;
 }
-
+.status-wishlist {
+  background-color: #5a9dc4; /* Azul escuro fundo */
+  color: #000000; /* Azul claro texto */
+}
 .play-btn.disabled {
   opacity: 0.6;
   cursor: not-allowed;

@@ -16,7 +16,7 @@ export const translations = {
       "Mandinga Games é um estúdio Indie de desenvolvimento de games, sediado na Bahia, Brasil.",
     aboutText2:
       "Junte-se à nossa comunidade e escolha sua rota para acompanhar de perto o desenvolvimento do nosso próximo projeto 'Black Sailors'.",
-    followUs: "Jogar Demo",
+    followUs: "Wishlist agora",
 
     gamesTitle: "Portifólio do Time",
     backToGames: "← Voltar para Games",
@@ -30,6 +30,7 @@ export const translations = {
     playOnSteam: "JOGAR NA STEAM",
     playTheDemo: "JOGAR DEMO",
     playNow: "JOGAR AGORA!",
+    wishlist: "WISHLIST NA STEAM",
 
     game_1_title: "Black Sailors",
     game_1_description:
@@ -73,7 +74,7 @@ export const translations = {
       "Mandinga Games is a Indie game development studio based in Bahia, Brazil.",
     aboutText2:
       "Join our community and choose your path to closely follow the development of our new project 'Black Sailors'..",
-    followUs: "Follow us",
+    followUs: "Wishlist Now",
 
     gamesTitle: "Team Portfolio",
     backToGames: "← Back to Games",
@@ -87,6 +88,7 @@ export const translations = {
     playOnSteam: "PLAY ON STEAM",
     playTheDemo: "PLAY THE DEMO",
     playNow: "PLAY NOW!",
+    wishlist: "WISHLIST ON STEAM",
 
     game_1_title: "Black Sailors",
     game_1_description:

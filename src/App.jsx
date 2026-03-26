@@ -38,8 +38,8 @@ const GAMES = [
     imageUrl: "/assets/games/blacksailors.png",
     imageMobile: "/assets/games/blacksailors_nologo.png",
     videoUrl: "/assets/videos/blacksailors_trailer_opt.mp4",
-    availability: "demo",
-    storeLink: "https://mandinga.itch.io/black-sailors",
+    availability: "wishlist",
+    storeLink: "https://store.steampowered.com/app/4230650/Black_Sailors/",
   },
   {
     id: 2,
@@ -100,12 +100,12 @@ const GAMES = [
 
 const AVAILABILITY_MAP = {
   now: { textKey: "availableNow", class: "status-now" },
+  wishlist: { textKey: "wishlist", class: "status-wishlist" }, // <--- Tem que ser 'wishlist' aqui
   demo: { textKey: "availableDemo", class: "status-demo" },
   soon: { textKey: "comingSoon", class: "status-soon" },
 };
-
 // ======================================
-// HEADER (Corrigido para evitar erro de Display Name)
+// HEADER
 // ======================================
 const HeaderComponent = ({ isHeaderDark, t, setLang }) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -296,7 +296,6 @@ const HeaderComponent = ({ isHeaderDark, t, setLang }) => {
   );
 };
 
-// Nomeando o memo para tirar o erro vermelho do VS Code
 const Header = React.memo(HeaderComponent);
 
 // ======================================
@@ -405,7 +404,7 @@ const HeroSection = React.memo(({ parallaxOffset }) => (
     <div className="hero-content"></div>
   </section>
 ));
-
+HeroSection.displayName = "HeroSection";
 const AboutUsSection = React.memo(({ t }) => (
   <section className="about-section" id="about-us-section">
     <div className="about-box">
@@ -416,7 +415,7 @@ const AboutUsSection = React.memo(({ t }) => (
 
         <div className="social-box">
           <a
-            href="https://mandinga.itch.io/"
+            href="https://store.steampowered.com/app/4230650/Black_Sailors/"
             target="_blank"
             rel="noopener noreferrer"
             className="general-btn"
@@ -458,7 +457,7 @@ const AboutUsSection = React.memo(({ t }) => (
     </div>
   </section>
 ));
-
+AboutUsSection.displayName = "AboutUsSection";
 // ======================================
 // GamesSection
 // ======================================
@@ -505,7 +504,7 @@ const HomePage = React.memo(({ parallaxOffset, t }) => (
     <GamesSection t={t} />
   </>
 ));
-
+HomePage.displayName = "HomePage";
 // ======================================
 // GAME DETAIL PAGE
 // ======================================
@@ -532,8 +531,17 @@ const GameDetailPage = ({ t }) => {
 
   const statusInfo =
     AVAILABILITY_MAP[game.availability] || AVAILABILITY_MAP.soon;
-
   const buttonProps = useMemo(() => {
+    if (!game) return { textKey: "comingSoon", link: null, disabled: true };
+
+    if (game.availability === "wishlist") {
+      return {
+        textKey: "wishlist",
+        link: game.storeLink,
+        disabled: false,
+        className: "btn-wishlist",
+      };
+    }
     if (game.availability === "demo") {
       return { textKey: "playTheDemo", link: game.storeLink, disabled: false };
     }
@@ -541,7 +549,7 @@ const GameDetailPage = ({ t }) => {
       return { textKey: "playOnSteam", link: game.storeLink, disabled: false };
     }
     return { textKey: "comingSoon", link: null, disabled: true };
-  }, [game.availability, game.storeLink]);
+  }, [game]);
 
   const handlePlayButtonClick = () => {
     if (buttonProps.link) {
@@ -549,13 +557,8 @@ const GameDetailPage = ({ t }) => {
     }
   };
 
-  // Botão back removido (comentado) conforme pedido
-  // const handleBackClick = () => navigate(-1);
-
   return (
     <main className="game-detail page-transition">
-      {/* BOTÃO BACK REMOVIDO DAQUI */}
-
       <div className="detail-img">
         <img
           src={game.imageMobile}
@@ -581,7 +584,6 @@ const GameDetailPage = ({ t }) => {
           )}
         </div>
       </div>
-
       <div className="detail-content">
         <div className="detail-text">
           <h1 className="game-title-container">
@@ -592,8 +594,9 @@ const GameDetailPage = ({ t }) => {
           </h1>
           <p>{t(game.descriptionKey)}</p>
 
+          {/* BOTÃO ATUALIZADO ABAIXO */}
           <button
-            className={`general-btn ${buttonProps.disabled ? "disabled" : ""}`}
+            className={`general-btn ${buttonProps.className || ""} ${buttonProps.disabled ? "disabled" : ""}`}
             onClick={handlePlayButtonClick}
             disabled={buttonProps.disabled}
           >
@@ -689,6 +692,7 @@ const Footer = React.memo(({ t }) => (
     </div>
   </footer>
 ));
+Footer.displayName = "Footer";
 // ======================================
 // COMPONENTE PRINCIPAL
 // ======================================

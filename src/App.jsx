@@ -6,6 +6,7 @@ import React, {
   useRef,
 } from "react";
 import "./App.css";
+import { FaBluesky } from "react-icons/fa6";
 import "./variables.css";
 import {
   FaSteam,
@@ -275,6 +276,7 @@ const HeaderComponent = ({ isHeaderDark, t, setLang }) => {
             >
               <FaTwitter />
             </a>
+
             <a
               href="https://www.instagram.com/mandinga.games/"
               target="_blank"
@@ -511,26 +513,13 @@ HomePage.displayName = "HomePage";
 const GameDetailPage = ({ t }) => {
   const { gameId } = useParams();
   const navigate = useNavigate();
+
   const game = useMemo(
     () => GAMES.find((g) => g.id === parseInt(gameId)),
     [gameId],
   );
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [gameId]);
-
-  if (!game) {
-    return (
-      <div className="game-not-found">
-        <h1>{t("notFound")}</h1>
-        <button onClick={() => navigate("/")}>{t("home")}</button>
-      </div>
-    );
-  }
-
-  const statusInfo =
-    AVAILABILITY_MAP[game.availability] || AVAILABILITY_MAP.soon;
+  // Solução do Erro: buttonProps agora roda ANTES do retorno condicional do HTML
   const buttonProps = useMemo(() => {
     if (!game) return { textKey: "comingSoon", link: null, disabled: true };
 
@@ -551,11 +540,29 @@ const GameDetailPage = ({ t }) => {
     return { textKey: "comingSoon", link: null, disabled: true };
   }, [game]);
 
+  const statusInfo = useMemo(() => {
+    return AVAILABILITY_MAP[game?.availability] || AVAILABILITY_MAP.soon;
+  }, [game]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [gameId]);
+
   const handlePlayButtonClick = () => {
     if (buttonProps.link) {
       window.open(buttonProps.link, "_blank");
     }
   };
+
+  // Retorno condicional seguro movido para baixo dos hooks obrigatórios
+  if (!game) {
+    return (
+      <div className="game-not-found">
+        <h1>{t("notFound")}</h1>
+        <button onClick={() => navigate("/")}>{t("home")}</button>
+      </div>
+    );
+  }
 
   return (
     <main className="game-detail page-transition">
@@ -594,7 +601,6 @@ const GameDetailPage = ({ t }) => {
           </h1>
           <p>{t(game.descriptionKey)}</p>
 
-          {/* BOTÃO ATUALIZADO ABAIXO */}
           <button
             className={`general-btn ${buttonProps.className || ""} ${buttonProps.disabled ? "disabled" : ""}`}
             onClick={handlePlayButtonClick}
@@ -666,12 +672,20 @@ const Footer = React.memo(({ t }) => (
           >
             <FaInstagram />
           </a>
+
           <a
             href="https://www.tiktok.com/@mandingagames"
             target="_blank"
             rel="noopener noreferrer"
           >
             <FaTiktok />
+          </a>
+          <a
+            href="https://bsky.app/profile/mandingagames.bsky.social"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaBluesky />
           </a>
           <a
             href="https://www.youtube.com/@mandingagames"
